@@ -3,178 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Finance Reporting System</title>
+    <title>Anik Financial Reporting</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        .active-tab { background-color: #1e293b; color: #60a5fa; border-bottom: 4px solid #60a5fa; }
-        .form-input { border: 2px solid #e2e8f0; padding: 12px; border-radius: 10px; transition: all 0.3s; }
-        .form-input:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 10px rgba(59, 130, 246, 0.2); }
-        label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        body { font-family: 'Inter', sans-serif; }
+        .pro-input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; transition: all 0.2s; }
+        .pro-input:focus { border-color: #2563eb; background: #fff; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        .loader-spin { border: 3px solid #f3f3f3; border-top: 3px solid #2563eb; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen">
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
 
-    <div class="max-w-3xl mx-auto md:my-10 bg-white shadow-2xl md:rounded-2xl overflow-hidden border border-slate-200">
-        
-        <!-- HEADER -->
-        <div class="bg-slate-900 p-6 text-white flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-black tracking-tighter text-blue-400">PRO-REPORT v2.0</h1>
-                <p class="text-[10px] opacity-60 font-bold italic uppercase">Automatic CA-BM Mapping System</p>
-            </div>
-            <i class="fas fa-database text-blue-400 text-2xl"></i>
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 border border-gray-100">
+        <!-- LOGO -->
+        <div class="flex justify-center mb-8">
+            <img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Anik Logo" class="h-14">
         </div>
 
-        <!-- ROLE NAVIGATION -->
-        <div class="flex bg-slate-800 text-white cursor-pointer text-[11px] font-black uppercase tracking-widest">
-            <div onclick="changeRole('FX_DAILY_RAW')" id="tabFX_DAILY_RAW" class="flex-1 p-4 text-center active-tab">FX Report</div>
-            <div onclick="changeRole('CA_DAILY_RAW')" id="tabCA_DAILY_RAW" class="flex-1 p-4 text-center">CA Verify</div>
-            <div onclick="changeRole('BM_DAILY_SNAPSHOT')" id="tabBM_DAILY_SNAPSHOT" class="flex-1 p-4 text-center">BM Snapshot</div>
+        <!-- INITIAL LOADER -->
+        <div id="app-loader" class="flex flex-col items-center py-10">
+            <div class="loader-spin"></div>
+            <p class="text-xs text-gray-500 mt-4 font-bold uppercase tracking-widest">Loading System...</p>
         </div>
 
-        <!-- LOADER -->
-        <div id="loader" class="p-20 text-center flex flex-col items-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-            <p class="mt-4 font-bold text-slate-500 uppercase text-xs">Sheet मधून डेटा लोड होत आहे...</p>
-        </div>
-
-        <!-- DYNAMIC FORM -->
-        <form id="mainForm" class="p-6 md:p-10 space-y-6 hidden">
-            <input type="hidden" name="formType" id="formType" value="FX_DAILY_RAW">
-
-            <div id="fieldsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- प्रश्न आपोआप इथे तयार होतील -->
+        <!-- SELECTION STEPS -->
+        <div id="app-content" class="hidden space-y-6">
+            
+            <!-- STEP 1: SELECT UNIT -->
+            <div id="step-unit">
+                <label class="text-[10px] font-extrabold text-gray-400 uppercase ml-1">आपले युनिट निवडा</label>
+                <select id="unitSelect" onchange="filterNames()" class="pro-input mt-1">
+                    <option value="">-- निवडा --</option>
+                </select>
             </div>
 
-            <div class="pt-8">
-                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-blue-700 transition-all uppercase tracking-widest">
-                    Submit Official Data
+            <!-- STEP 2: SELECT NAME -->
+            <div id="step-name" class="hidden">
+                <label class="text-[10px] font-extrabold text-gray-400 uppercase ml-1">आपले नांव निवडा</label>
+                <select id="nameSelect" onchange="loadStaffForm()" class="pro-input mt-1">
+                    <option value="">-- निवडा --</option>
+                </select>
+            </div>
+
+            <!-- DYNAMIC FORM -->
+            <form id="reportingForm" class="hidden pt-4 border-t border-gray-100 space-y-4">
+                <div id="formFields" class="grid grid-cols-1 gap-4">
+                    <!-- Fields injected here -->
+                </div>
+                
+                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-blue-700 transition transform active:scale-95 uppercase tracking-wider text-sm">
+                    Submit Report
                 </button>
-            </div>
-        </form>
+            </form>
+        </div>
 
-        <!-- SUCCESS BOX -->
-        <div id="successBox" class="hidden p-16 text-center space-y-4">
-            <i class="fas fa-check-circle text-6xl text-green-500"></i>
-            <h2 class="text-2xl font-bold text-slate-800 uppercase">Data Synced!</h2>
-            <p class="text-slate-500">तुमचा रिपोर्ट Google Sheet मध्ये सुरक्षितपणे सेव्ह झाला आहे.</p>
-            <button onclick="location.reload()" class="bg-slate-900 text-white px-8 py-3 rounded-lg font-bold">नवीन एन्ट्री करा</button>
+        <!-- SUCCESS MESSAGE -->
+        <div id="successPage" class="hidden text-center py-10">
+            <div class="text-5xl mb-4">✅</div>
+            <h2 class="text-xl font-bold text-gray-800">डेटा यशस्वीरित्या जतन झाला!</h2>
+            <button onclick="location.reload()" class="mt-6 text-blue-600 font-bold underline">नवीन एन्ट्री करा</button>
         </div>
     </div>
 
     <script>
-        // १. तुमची Google Apps Script URL इथे टाका
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxF4ygfBquzdCAewh_QSoppOqrqlBFrSAG4vhmQ1jEk114W0ZBExOOu4cZGUIeD_0M/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwlwWJzthAbflBGHqnNfgXgWvrrgqiG4ESvYRanTSIkUM7SZus81q5o2_lSFlTN8Lk/exec';
+        let fullData = {};
+        let selectedStaff = {};
 
-        let masterData = {};
-        let currentRole = 'FX_DAILY_RAW';
-
-        // २. सिस्टिम स्टार्टअप - डेटा लोड करणे
-        async function init() {
+        // १. सिस्टिम स्टार्टअप - डेटा फास्ट फेच करणे
+        async function loadApp() {
             try {
                 const res = await fetch(scriptURL);
-                masterData = await res.json();
-                document.getElementById('loader').classList.add('hidden');
-                document.getElementById('mainForm').classList.remove('hidden');
-                renderForm();
-            } catch (err) {
-                alert("नेटवर्क एरर! कृपया URL तपासा.");
+                fullData = await res.json();
+                
+                const units = [...new Set(fullData.staff.map(s => s[3]))]; // Column D
+                const unitSelect = document.getElementById('unitSelect');
+                units.forEach(u => unitSelect.innerHTML += `<option value="${u}">${u}</option>`);
+                
+                document.getElementById('app-loader').classList.add('hidden');
+                document.getElementById('app-content').classList.remove('hidden');
+            } catch (err) { alert("सिस्टिम लोड एरर!"); }
+        }
+
+        // २. युनिटनुसार नावे फिल्टर करणे
+        function filterNames() {
+            const unit = document.getElementById('unitSelect').value;
+            const nameSelect = document.getElementById('nameSelect');
+            nameSelect.innerHTML = '<option value="">-- निवडा --</option>';
+            
+            if(unit) {
+                const filtered = fullData.staff.filter(s => s[3] === unit);
+                filtered.forEach(s => nameSelect.innerHTML += `<option value="${s[0]}">${s[1]} (${s[2]})</option>`);
+                document.getElementById('step-name').classList.remove('hidden');
+            } else {
+                document.getElementById('step-name').classList.add('hidden');
             }
         }
 
-        // ३. फॉर्म रेंडरिंग (मॅजिक लॉजिक)
-        function renderForm() {
-            const container = document.getElementById('fieldsContainer');
-            container.innerHTML = '';
-            const headers = masterData.headers[currentRole];
+        // ३. नावानुसार फॉर्म लोड करणे (FX, CA, BM)
+        function loadStaffForm() {
+            const staffId = document.getElementById('nameSelect').value;
+            selectedStaff = fullData.staff.find(s => s[0] == staffId);
+            const role = selectedStaff[2]; // Role: FX/CA/BM
+            
+            const formFields = document.getElementById('formFields');
+            const reportingForm = document.getElementById('reportingForm');
+            formFields.innerHTML = '';
+            
+            const headers = fullData.headers[role];
 
             headers.forEach(header => {
                 const div = document.createElement('div');
-                div.className = "flex flex-col";
                 const labelText = header.replace(/_/g, ' ');
+                
+                // AUTO-FILL LOGIC: Staff ID, Name, CA Name, Branch इ. आपोआप भरणे
+                let val = "";
+                if(header === "Staff_ID") val = selectedStaff[0];
+                if(header === "FX_Name" || header === "Staff_Name") val = selectedStaff[1];
+                if(header === "Role") val = selectedStaff[2];
+                if(header === "Branch_Name" || header === "Unit_Name") val = selectedStaff[3];
+                if(header === "Reporting_CA_ID" || header === "Reporting_CA_Name") val = selectedStaff[4]; // FX साठी CA निहाय माहिती
 
-                // A. Branch Dropdown (Staff Master वर आधारित)
-                if (header.includes("Branch")) {
-                    const branches = [...new Set(masterData.staffData.slice(1).map(row => row[3]))]; // Column 4 in Master
-                    div.innerHTML = `<label>${labelText}</label>
-                        <select name="${header}" onchange="autoFill(this.value)" required class="form-input bg-blue-50">
-                            <option value="">-- निवडा --</option>
-                            ${branches.map(b => `<option value="${b}">${b}</option>`).join('')}
-                        </select>`;
-                } 
-                // B. Auto-fill Fields (CA_Name, BM_Name इ.)
-                else if (header.includes("Name") || header.includes("CA_ID") || header.includes("BM")) {
-                    div.innerHTML = `<label>${labelText}</label>
-                        <input type="text" name="${header}" id="field-${header}" placeholder="Auto-fills from Master" class="form-input bg-gray-100 italic">`;
-                }
-                // C. Normal Fields (Date, Number, Text)
-                else {
-                    let type = "text";
-                    if(header.toLowerCase().includes('date')) type = "date";
-                    if(header.toLowerCase().includes('amount') || header.toLowerCase().includes('count') || header.toLowerCase().includes('due')) type = "number";
-                    
-                    div.innerHTML = `<label>${labelText}</label>
-                        <input type="${type}" name="${header}" placeholder="Enter ${labelText}" class="form-input">`;
-                }
-                container.appendChild(div);
+                let type = "text";
+                if(header.toLowerCase().includes('date')) type = "date";
+                if(header.toLowerCase().includes('amount') || header.toLowerCase().includes('count')) type = "number";
+
+                div.innerHTML = `
+                    <label class="text-[10px] font-bold text-gray-500 uppercase ml-1">${labelText}</label>
+                    <input type="${type}" name="${header}" value="${val}" ${val ? 'readonly class="pro-input bg-gray-100"' : 'class="pro-input"'} placeholder="${labelText}">
+                `;
+                formFields.appendChild(div);
             });
+
+            reportingForm.classList.remove('hidden');
         }
 
-        // ४. Auto-Mapping Logic
-        function autoFill(selectedBranch) {
-            // STAFF_MASTER मध्ये ब्रांच शोधणे
-            const staffRow = masterData.staffData.find(row => row[3] === selectedBranch);
-            if (staffRow) {
-                // तुमच्या STAFF_MASTER शीटच्या कॉलम नंबरनुसार हे ॲडजस्ट करा
-                // समजा: Column 1=ID, 2=Name, 3=Role, 4=Branch, 5=CA, 6=BM
-                const mappings = {
-                    "CA_Name": staffRow[4],
-                    "Reporting_CA_ID": staffRow[4],
-                    "BM_Name": staffRow[5],
-                    "CA_ID": staffRow[4]
-                };
-
-                for (let key in mappings) {
-                    const field = document.getElementById('field-' + key);
-                    if (field) field.value = mappings[key];
-                }
-            }
-        }
-
-        // ५. रोल बदलणे
-        function changeRole(role) {
-            currentRole = role;
-            document.getElementById('formType').value = role;
-            ['FX_DAILY_RAW', 'CA_DAILY_RAW', 'BM_DAILY_SNAPSHOT'].forEach(r => {
-                document.getElementById('tab' + r).classList.remove('active-tab');
-            });
-            document.getElementById('tab' + role).classList.add('active-tab');
-            renderForm();
-        }
-
-        // ६. फॉर्म सबमिट करणे
-        document.getElementById('mainForm').addEventListener('submit', e => {
+        // ४. फॉर्म सबमिट करणे
+        document.getElementById('reportingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerText = "Cloud Syncing...";
+            btn.disabled = true; btn.innerText = "Saving to Server...";
 
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
+            data.Role = selectedStaff[2]; // Script ला सांगण्यासाठी
 
-            fetch(scriptURL, { method: 'POST', body: JSON.stringify(data) })
-            .then(() => {
-                document.getElementById('mainForm').classList.add('hidden');
-                document.getElementById('successBox').classList.remove('hidden');
-            })
-            .catch(() => {
-                alert('एरर! पुन्हा प्रयत्न करा.');
-                btn.disabled = false;
-            });
+            await fetch(scriptURL, { method: 'POST', body: JSON.stringify(data) });
+            document.getElementById('app-content').classList.add('hidden');
+            document.getElementById('successPage').classList.remove('hidden');
         });
 
-        window.onload = init;
+        window.onload = loadApp;
     </script>
 </body>
 </html>
