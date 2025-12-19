@@ -3,156 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anik Financial Reporting</title>
+    <title>Anik Fin App</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .pro-input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; transition: all 0.2s; }
-        .pro-input:focus { border-color: #2563eb; background: #fff; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-        .loader-spin { border: 3px solid #f3f3f3; border-top: 3px solid #2563eb; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        :root { --primary: #0046ad; --secondary: #00adff; }
+        body { background: #f0f4f8; font-family: 'Segoe UI', Roboto, sans-serif; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-gradient { background: linear-gradient(135deg, var(--primary), var(--secondary)); transition: all 0.3s; }
+        .btn-gradient:active { transform: scale(0.96); }
+        .input-pro { background: #f1f5f9; border: 2px solid transparent; transition: all 0.3s; padding: 14px; border-radius: 12px; width: 100%; }
+        .input-pro:focus { border-color: var(--secondary); background: white; outline: none; }
+        .step-card { display: none; }
+        .active-step { display: block; animation: fadeInRight 0.4s; }
+        /* Speed Loader */
+        #speed-loader { position: fixed; inset: 0; background: white; z-index: 100; display: flex; align-items: center; justify-content: center; transition: 0.5s; }
     </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
+<body>
 
-    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 border border-gray-100">
-        <!-- LOGO -->
-        <div class="flex justify-center mb-8">
-            <img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Anik Logo" class="h-14">
-        </div>
-
-        <!-- INITIAL LOADER -->
-        <div id="app-loader" class="flex flex-col items-center py-10">
-            <div class="loader-spin"></div>
-            <p class="text-xs text-gray-500 mt-4 font-bold uppercase tracking-widest">Loading System...</p>
-        </div>
-
-        <!-- SELECTION STEPS -->
-        <div id="app-content" class="hidden space-y-6">
-            
-            <!-- STEP 1: SELECT UNIT -->
-            <div id="step-unit">
-                <label class="text-[10px] font-extrabold text-gray-400 uppercase ml-1">आपले युनिट निवडा</label>
-                <select id="unitSelect" onchange="filterNames()" class="pro-input mt-1">
-                    <option value="">-- निवडा --</option>
-                </select>
+    <!-- Fast Loader Overlay -->
+    <div id="speed-loader">
+        <div class="text-center">
+            <img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" class="h-12 mb-4 animate__animated animate__pulse animate__infinite">
+            <div class="w-48 h-1 bg-gray-100 rounded-full overflow-hidden mx-auto">
+                <div id="load-bar" class="h-full bg-blue-600 w-0 transition-all duration-700"></div>
             </div>
-
-            <!-- STEP 2: SELECT NAME -->
-            <div id="step-name" class="hidden">
-                <label class="text-[10px] font-extrabold text-gray-400 uppercase ml-1">आपले नांव निवडा</label>
-                <select id="nameSelect" onchange="loadStaffForm()" class="pro-input mt-1">
-                    <option value="">-- निवडा --</option>
-                </select>
-            </div>
-
-            <!-- DYNAMIC FORM -->
-            <form id="reportingForm" class="hidden pt-4 border-t border-gray-100 space-y-4">
-                <div id="formFields" class="grid grid-cols-1 gap-4">
-                    <!-- Fields injected here -->
-                </div>
-                
-                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-blue-700 transition transform active:scale-95 uppercase tracking-wider text-sm">
-                    Submit Report
-                </button>
-            </form>
-        </div>
-
-        <!-- SUCCESS MESSAGE -->
-        <div id="successPage" class="hidden text-center py-10">
-            <div class="text-5xl mb-4">✅</div>
-            <h2 class="text-xl font-bold text-gray-800">डेटा यशस्वीरित्या जतन झाला!</h2>
-            <button onclick="location.reload()" class="mt-6 text-blue-600 font-bold underline">नवीन एन्ट्री करा</button>
         </div>
     </div>
 
+    <div class="max-w-md mx-auto min-h-screen flex flex-col p-4">
+        <!-- Logo Section -->
+        <header class="py-6 text-center">
+            <img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" class="h-14 mx-auto drop-shadow-sm">
+        </header>
+
+        <main class="flex-1 glass rounded-[2rem] p-6 shadow-2xl relative overflow-hidden">
+            
+            <!-- STEP 1: UNIT SELECTION -->
+            <div id="step-1" class="step-card active-step">
+                <h3 class="text-lg font-extrabold text-gray-800 mb-6 uppercase tracking-tight">आपले युनिट निवडा</h3>
+                <div id="unit-grid" class="grid grid-cols-1 gap-3">
+                    <!-- Units will be injected here -->
+                </div>
+            </div>
+
+            <!-- STEP 2: NAME SELECTION -->
+            <div id="step-2" class="step-card">
+                <button onclick="goBack(1)" class="text-blue-600 text-sm font-bold mb-4 flex items-center"><i class="fas fa-chevron-left mr-2"></i> परत जा</button>
+                <h3 class="text-lg font-extrabold text-gray-800 mb-6 uppercase tracking-tight">आपले नांव निवडा</h3>
+                <div id="name-grid" class="grid grid-cols-1 gap-3">
+                    <!-- Names will be injected here -->
+                </div>
+            </div>
+
+            <!-- STEP 3: DYNAMIC FORM -->
+            <div id="step-3" class="step-card">
+                <button onclick="goBack(2)" class="text-blue-600 text-sm font-bold mb-4 flex items-center"><i class="fas fa-chevron-left mr-2"></i> परत जा</button>
+                <div id="staff-badge" class="bg-blue-50 p-3 rounded-xl mb-6 flex items-center border border-blue-100">
+                    <div class="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3" id="initials">A</div>
+                    <div>
+                        <p id="display-name" class="font-bold text-gray-800 leading-none"></p>
+                        <p id="display-role" class="text-[10px] text-blue-600 uppercase font-bold mt-1 tracking-widest"></p>
+                    </div>
+                </div>
+
+                <form id="reportingForm" class="space-y-5">
+                    <div id="formFields" class="space-y-4"></div>
+                    <button type="submit" id="submitBtn" class="btn-gradient w-full text-white font-bold py-4 rounded-2xl shadow-lg mt-6 uppercase tracking-widest">Submit Report</button>
+                </form>
+            </div>
+
+            <!-- SUCCESS PAGE -->
+            <div id="step-success" class="step-card text-center py-10">
+                <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto text-4xl mb-6">✓</div>
+                <h2 class="text-2xl font-black text-gray-800 uppercase">Synced!</h2>
+                <p class="text-gray-500 mt-2">तुमचा डेटा सुरक्षितपणे पाठवला गेला आहे.</p>
+                <button onclick="location.reload()" class="mt-8 text-blue-600 font-bold underline italic">नवीन एन्ट्री करा</button>
+            </div>
+        </main>
+        
+        <footer class="py-6 text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+            © 2024 Anik Financial Services | Secured Reporting
+        </footer>
+    </div>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwlwWJzthAbflBGHqnNfgXgWvrrgqiG4ESvYRanTSIkUM7SZus81q5o2_lSFlTN8Lk/exec';
-        let fullData = {};
-        let selectedStaff = {};
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx8pbwzn0zpg_wHVAQfFolBfaEvwJklonetxTZ_Wnm34ZwNYJwBjH-jRFIuE2m3yJs/exec';
+        let appData = null;
+        let selectedStaff = null;
 
-        // १. सिस्टिम स्टार्टअप - डेटा फास्ट फेच करणे
+        // १. १-सेकंद लोड स्ट्रॅटेजी
         async function loadApp() {
+            const start = Date.now();
+            document.getElementById('load-bar').style.width = '40%';
+            
             try {
+                // कॅशिंग चेक (जर डेटा आधीच असेल तर तो वापरा)
+                const cached = localStorage.getItem('anik_data');
+                if(cached) {
+                    appData = JSON.parse(cached);
+                    renderUnits();
+                    hideLoader();
+                }
+
+                // बॅकग्राउंड अपडेट
                 const res = await fetch(scriptURL);
-                fullData = await res.json();
+                appData = await res.json();
+                localStorage.setItem('anik_data', JSON.stringify(appData));
                 
-                const units = [...new Set(fullData.staff.map(s => s[3]))]; // Column D
-                const unitSelect = document.getElementById('unitSelect');
-                units.forEach(u => unitSelect.innerHTML += `<option value="${u}">${u}</option>`);
-                
-                document.getElementById('app-loader').classList.add('hidden');
-                document.getElementById('app-content').classList.remove('hidden');
-            } catch (err) { alert("सिस्टिम लोड एरर!"); }
+                if(!cached) {
+                    renderUnits();
+                    hideLoader();
+                }
+                document.getElementById('load-bar').style.width = '100%';
+            } catch (err) { alert("Network Error!"); }
         }
 
-        // २. युनिटनुसार नावे फिल्टर करणे
-        function filterNames() {
-            const unit = document.getElementById('unitSelect').value;
-            const nameSelect = document.getElementById('nameSelect');
-            nameSelect.innerHTML = '<option value="">-- निवडा --</option>';
-            
-            if(unit) {
-                const filtered = fullData.staff.filter(s => s[3] === unit);
-                filtered.forEach(s => nameSelect.innerHTML += `<option value="${s[0]}">${s[1]} (${s[2]})</option>`);
-                document.getElementById('step-name').classList.remove('hidden');
-            } else {
-                document.getElementById('step-name').classList.add('hidden');
-            }
+        function hideLoader() {
+            document.getElementById('speed-loader').style.opacity = '0';
+            setTimeout(() => document.getElementById('speed-loader').style.display = 'none', 500);
         }
 
-        // ३. नावानुसार फॉर्म लोड करणे (FX, CA, BM)
-        function loadStaffForm() {
-            const staffId = document.getElementById('nameSelect').value;
-            selectedStaff = fullData.staff.find(s => s[0] == staffId);
-            const role = selectedStaff[2]; // Role: FX/CA/BM
-            
-            const formFields = document.getElementById('formFields');
-            const reportingForm = document.getElementById('reportingForm');
-            formFields.innerHTML = '';
-            
-            const headers = fullData.headers[role];
+        // २. युनिट रेंडरिंग (Pro Buttons)
+        function renderUnits() {
+            const units = [...new Set(appData.s.map(s => s[3]))];
+            const container = document.getElementById('unit-grid');
+            container.innerHTML = units.map(u => `
+                <button onclick="selectUnit('${u}')" class="p-4 text-left glass border-2 border-gray-100 rounded-2xl font-bold text-gray-700 hover:border-blue-500 transition shadow-sm flex justify-between items-center">
+                    ${u} <i class="fas fa-chevron-right text-gray-300"></i>
+                </button>
+            `).join('');
+        }
 
-            headers.forEach(header => {
-                const div = document.createElement('div');
-                const labelText = header.replace(/_/g, ' ');
-                
-                // AUTO-FILL LOGIC: Staff ID, Name, CA Name, Branch इ. आपोआप भरणे
+        function selectUnit(unit) {
+            const filtered = appData.s.filter(s => s[3] === unit);
+            const container = document.getElementById('name-grid');
+            container.innerHTML = filtered.map(s => `
+                <button onclick="selectStaff('${s[0]}')" class="p-4 text-left glass border-2 border-gray-100 rounded-2xl font-bold text-gray-700 hover:border-blue-500 transition shadow-sm">
+                    ${s[1]} <span class="text-[10px] text-blue-500 opacity-60 ml-2 font-normal italic">${s[2]}</span>
+                </button>
+            `).join('');
+            moveStep(2);
+        }
+
+        function selectStaff(id) {
+            selectedStaff = appData.s.find(s => s[0] == id);
+            document.getElementById('display-name').innerText = selectedStaff[1];
+            document.getElementById('display-role').innerText = selectedStaff[2];
+            document.getElementById('initials').innerText = selectedStaff[1][0];
+            
+            const role = selectedStaff[2];
+            const headers = appData.h[role];
+            const container = document.getElementById('formFields');
+            container.innerHTML = '';
+
+            headers.forEach(h => {
+                const label = h.replace(/_/g, ' ');
                 let val = "";
-                if(header === "Staff_ID") val = selectedStaff[0];
-                if(header === "FX_Name" || header === "Staff_Name") val = selectedStaff[1];
-                if(header === "Role") val = selectedStaff[2];
-                if(header === "Branch_Name" || header === "Unit_Name") val = selectedStaff[3];
-                if(header === "Reporting_CA_ID" || header === "Reporting_CA_Name") val = selectedStaff[4]; // FX साठी CA निहाय माहिती
+                // Auto-fill logic
+                if(h === "Staff_ID") val = selectedStaff[0];
+                if(h.includes("Name")) {
+                    if(h.includes("CA")) val = selectedStaff[4]; // FX समोरचा CA
+                    else if(h.includes("Branch") || h.includes("Unit")) val = selectedStaff[3];
+                    else val = selectedStaff[1];
+                }
 
                 let type = "text";
-                if(header.toLowerCase().includes('date')) type = "date";
-                if(header.toLowerCase().includes('amount') || header.toLowerCase().includes('count')) type = "number";
+                if(h.toLowerCase().includes('date')) type = "date";
+                if(h.toLowerCase().includes('amount') || h.toLowerCase().includes('count')) type = "number";
 
-                div.innerHTML = `
-                    <label class="text-[10px] font-bold text-gray-500 uppercase ml-1">${labelText}</label>
-                    <input type="${type}" name="${header}" value="${val}" ${val ? 'readonly class="pro-input bg-gray-100"' : 'class="pro-input"'} placeholder="${labelText}">
+                container.innerHTML += `
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-1">${label}</label>
+                        <input type="${type}" name="${h}" value="${val}" ${val ? 'readonly' : ''} class="input-pro mt-1" placeholder="${label} प्रविष्ट करा">
+                    </div>
                 `;
-                formFields.appendChild(div);
             });
-
-            reportingForm.classList.remove('hidden');
+            moveStep(3);
         }
 
-        // ४. फॉर्म सबमिट करणे
+        function moveStep(n) {
+            document.querySelectorAll('.step-card').forEach(s => s.classList.remove('active-step'));
+            document.getElementById('step-' + n).classList.add('active-step');
+        }
+
+        function goBack(n) { moveStep(n); }
+
         document.getElementById('reportingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.innerText = "Saving to Server...";
+            btn.disabled = true; btn.innerText = "मेघवर जतन करत आहे...";
 
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
-            data.Role = selectedStaff[2]; // Script ला सांगण्यासाठी
+            data.Role = selectedStaff[2];
 
-            await fetch(scriptURL, { method: 'POST', body: JSON.stringify(data) });
-            document.getElementById('app-content').classList.add('hidden');
-            document.getElementById('successPage').classList.remove('hidden');
+            try {
+                await fetch(scriptURL, { method: 'POST', body: JSON.stringify(data) });
+                document.querySelectorAll('.step-card').forEach(s => s.classList.remove('active-step'));
+                document.getElementById('step-success').classList.add('active-step');
+            } catch(e) { alert("Error!"); btn.disabled = false; }
         });
 
         window.onload = loadApp;
