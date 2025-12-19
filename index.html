@@ -3,56 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anik Financial Pro Reporting</title>
+    <title>Anik Financial Pro-App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: #f8fafc; font-family: 'Segoe UI', sans-serif; }
-        .pro-card { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .input-field { width: 100%; border: 1.5px solid #e2e8f0; padding: 10px; border-radius: 12px; font-size: 14px; outline: none; background: #fdfdfd; }
-        .input-field:focus { border-color: #0046ad; background: #fff; }
-        .section-title { background: #0046ad; color: white; padding: 8px 15px; border-radius: 10px; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; margin-top: 25px; }
-        .table-input { width: 100%; border-bottom: 2px solid #cbd5e1; text-align: center; font-weight: bold; font-size: 13px; }
-        #loader { position: fixed; inset: 0; background: white; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        body { background: #f3f4f6; font-family: 'Inter', sans-serif; }
+        .card { background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .input-box { width: 100%; border: 1.5px solid #e2e8f0; padding: 10px; border-radius: 10px; font-size: 14px; outline: none; }
+        .input-box:focus { border-color: #0046ad; }
+        .table-input { width: 80px; border-bottom: 2px solid #e2e8f0; text-align: center; font-weight: bold; }
+        .section-header { background: #0046ad; color: white; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
+        #app-loader { position: fixed; inset: 0; background: white; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.4s; }
     </style>
 </head>
-<body class="pb-10">
+<body>
 
-    <!-- FAST LOADER -->
-    <div id="loader">
-        <img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" class="h-14 animate-pulse">
-        <p class="text-[10px] font-bold text-gray-400 mt-4 uppercase tracking-widest italic">System Loading...</p>
+    <!-- Fast Loader -->
+    <div id="app-loader">
+        <img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" class="h-16 mb-4 animate-pulse">
+        <div class="h-1 w-48 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600 animate-[load_1.5s_ease-in-out_infinite]" style="width: 30%"></div></div>
     </div>
 
     <div class="max-w-xl mx-auto p-4">
-        <!-- LOGO -->
+        <!-- Logo -->
         <div class="text-center my-6">
-            <img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" class="h-14 mx-auto">
+            <img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" class="h-12 mx-auto">
         </div>
 
-        <!-- SELECTION -->
-        <div id="selection-card" class="pro-card p-6 space-y-4 border border-gray-100">
+        <!-- SELECTION CARD -->
+        <div id="selection-card" class="card p-6 space-y-4">
             <div>
-                <label class="text-[10px] font-bold text-gray-400 ml-1">युनिट निवडा</label>
-                <select id="unitSelect" onchange="filterNames()" class="input-field mt-1"></select>
+                <label class="text-[10px] font-bold text-gray-400">आपले युनिट निवडा</label>
+                <select id="unitSelect" onchange="filterNames()" class="input-box"></select>
             </div>
             <div id="nameDiv" class="hidden">
-                <label class="text-[10px] font-bold text-gray-400 ml-1">नांव निवडा</label>
-                <select id="nameSelect" onchange="startForm()" class="input-field mt-1"></select>
+                <label class="text-[10px] font-bold text-gray-400">आपले नांव निवडा</label>
+                <select id="nameSelect" onchange="startReporting()" class="input-box"></select>
             </div>
         </div>
 
-        <!-- MAIN FORM -->
+        <!-- MAIN REPORTING FORM -->
         <form id="reportingForm" class="hidden mt-6 pb-20">
-            <div class="pro-card p-6 space-y-4">
-                <div class="flex justify-between items-center border-b pb-4 mb-4">
-                    <h2 id="roleTitle" class="font-black text-blue-900 italic uppercase"></h2>
-                    <input type="date" name="Report_Date" id="currentDate" class="text-xs font-bold border-none outline-none">
+            <div class="card p-6 space-y-6">
+                <div class="flex justify-between items-center border-b pb-4">
+                    <h2 id="roleTitle" class="font-black text-blue-900 uppercase italic">Reporting</h2>
+                    <input type="date" name="ReportDate" id="currentDate" class="text-xs font-bold border-none outline-none">
                 </div>
 
                 <div id="dynamicSections"></div>
 
-                <button type="submit" id="submitBtn" class="w-full bg-[#0046ad] text-white font-bold py-4 rounded-2xl shadow-xl mt-8 uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-95 transition">
+                <button type="submit" id="submitBtn" class="w-full bg-[#0046ad] text-white font-bold py-4 rounded-2xl shadow-lg uppercase tracking-widest text-sm">
                     Submit Final Report
                 </button>
             </div>
@@ -60,157 +60,147 @@
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwFLk31KvO94CEnO1m28C1nUSReyigqGpKF_JbCZnO1xjSQMnQGc4gvkbK2IDRzZNQ/exec';
-        let fullData = {};
-        let user = {};
+        const scriptURL = 'येथे_तुमची_URL_टाका';
+        let apiData = {};
+        let currentUser = {};
 
         window.onload = async () => {
             const res = await fetch(scriptURL);
-            fullData = await res.json();
-            const units = [...new Set(fullData.staff.map(s => s[3]))];
-            document.getElementById('unitSelect').innerHTML = '<option value="">-- निवडा --</option>' + units.map(u => `<option value="${u}">${u}</option>`).join('');
-            document.getElementById('loader').style.display = 'none';
+            apiData = await res.json();
+            const units = [...new Set(apiData.staff.map(s => s.unit))];
+            const unitSelect = document.getElementById('unitSelect');
+            unitSelect.innerHTML = '<option value="">-- निवडा --</option>' + units.map(u => `<option value="${u}">${u}</option>`).join('');
+            document.getElementById('app-loader').style.opacity = '0';
+            setTimeout(() => document.getElementById('app-loader').style.display = 'none', 500);
+            document.getElementById('currentDate').valueAsDate = new Date();
         };
 
         function filterNames() {
             const unit = document.getElementById('unitSelect').value;
-            const filtered = fullData.staff.filter(s => s[3] === unit);
-            document.getElementById('nameSelect').innerHTML = '<option value="">-- निवडा --</option>' + filtered.map(s => `<option value="${s[0]}">${s[1]} (${s[2]})</option>`).join('');
+            const nameSelect = document.getElementById('nameSelect');
+            if(!unit) return document.getElementById('nameDiv').classList.add('hidden');
+            const filtered = apiData.staff.filter(s => s.unit === unit);
+            nameSelect.innerHTML = '<option value="">-- निवडा --</option>' + filtered.map(s => `<option value="${s.id}">${s.name} (${s.role})</option>`).join('');
             document.getElementById('nameDiv').classList.remove('hidden');
         }
 
-        function startForm() {
-            const id = document.getElementById('nameSelect').value;
-            user = fullData.staff.find(s => s[0] == id);
-            document.getElementById('roleTitle').innerText = `${user[2]} REPORT`;
-            document.getElementById('currentDate').valueAsDate = new Date();
-            renderForm(user[2]);
+        function startReporting() {
+            const userId = document.getElementById('nameSelect').value;
+            currentUser = apiData.staff.find(s => s.id == userId);
+            document.getElementById('roleTitle').innerText = `${currentUser.role} REPORT`;
             document.getElementById('reportingForm').classList.remove('hidden');
+            renderRoleForm(currentUser.role);
         }
 
-        function renderForm(role) {
+        function renderRoleForm(role) {
             const container = document.getElementById('dynamicSections');
-            const caList = user[5] ? user[5].split(',') : []; // CA List from Column F
+            container.innerHTML = '';
 
             if(role === 'FX') {
                 container.innerHTML = `
-                    <div class="section-title">आजचे एकुण कलेक्शन (Regular + OD)</div>
-                    <table class="w-full text-[11px] mb-4">
-                        <tr class="text-gray-400"><td>सी ऐ नांव</td><td>खाते</td><td>रक्कम</td></tr>
-                        ${caList.map(ca => `
-                            <tr><td class="font-bold py-3 border-b">${ca}</td>
-                            <td class="border-b"><input type="number" name="RegOD_Qty_${ca}" class="table-input fx-qty" oninput="calcFX()"></td>
-                            <td class="border-b"><input type="number" name="RegOD_Amt_${ca}" class="table-input fx-amt" oninput="calcFX()"></td></tr>
+                    <div class="section-header">आजचे एकुण कलेक्शन (Regular + OD)</div>
+                    <table class="w-full text-[10px]">
+                        <tr class="text-gray-400 font-bold border-b"><td>सी ऐ नांव</td><td>खाते</td><td>रक्कम</td></tr>
+                        ${currentUser.assignedCAs.map(ca => `
+                            <tr class="border-b"><td class="py-2">${ca}</td>
+                            <td><input type="number" name="Coll_Qty_${ca}" class="table-input" oninput="calcFX()"></td>
+                            <td><input type="number" name="Coll_Amt_${ca}" class="table-input fx-amt" oninput="calcFX()"></td></tr>
                         `).join('')}
-                        <tr class="font-black text-blue-800"><td>एकूण</td><td id="total-qty" class="text-center italic">0</td><td id="total-amt" class="text-center italic">0</td></tr>
+                        <tr class="font-bold text-blue-800"><td>एकूण</td><td id="fx-total-qty">0</td><td id="fx-total-amt">0</td></tr>
                     </table>
 
-                    <div class="section-title">कॅश / डिजीटल फोड (सी ऐ निहाय)</div>
-                    ${caList.map(ca => `
+                    <div class="section-header mt-8">सी ऐ निहाय किती रक्कम कॅश / डिजीटल आली</div>
+                    ${currentUser.assignedCAs.map(ca => `
                         <div class="grid grid-cols-3 gap-2 mb-2 items-center">
                             <span class="text-[10px] font-bold">${ca}</span>
-                            <input type="number" name="Cash_${ca}" placeholder="कॅश" class="input-field text-xs">
-                            <input type="number" name="Digital_${ca}" placeholder="डिजीटल" class="input-field text-xs">
+                            <input type="number" name="Cash_${ca}" placeholder="Cash" class="input-box py-1 text-xs">
+                            <input type="number" name="Digital_${ca}" placeholder="Digital" class="input-box py-1 text-xs">
                         </div>
                     `).join('')}
 
-                    <div class="section-title">हातावर शिल्लक (Discipline)</div>
-                    ${caList.map(ca => `
+                    <div class="section-header mt-8">हातावर शिल्लक (Discipline)</div>
+                    ${currentUser.assignedCAs.map(ca => `
                         <div class="grid grid-cols-2 gap-2 mb-2">
                             <span class="text-[10px] font-bold">${ca}</span>
-                            <input type="number" name="HandCash_${ca}" placeholder="शिल्लक रक्कम" class="input-field text-xs">
+                            <input type="number" name="Hand_Cash_${ca}" placeholder="शिल्लक रक्कम" class="input-box py-1 text-xs">
                         </div>
                     `).join('')}
-                    <textarea name="Cash_Reason" placeholder="शिल्लक राहण्याचे कारण लिहा..." class="input-field mt-2 h-16"></textarea>
+                    <textarea name="Cash_Reason" placeholder="हातावर शिल्लक राहण्याचे कारण लिहा..." class="input-box mt-2 h-16"></textarea>
 
-                    <div class="section-title">Portfolio & Interactions</div>
+                    <div class="section-header mt-8">Portfolio & Interactions</div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div><label class="text-[9px] font-bold">Visited</label><input type="number" name="Visited" class="input-field"></div>
-                        <div><label class="text-[9px] font-bold">Not Paid</label><input type="number" name="NotPaid" class="input-field"></div>
+                        <div><label class="text-[9px]">Visited Today</label><input type="number" name="Visited" class="input-box"></div>
+                        <div><label class="text-[9px]">Not Paid</label><input type="number" name="NotPaid" class="input-box"></div>
                     </div>
-
-                    <div class="section-title">आजची ओडी स्थिती & टार्गेट</div>
-                    <table class="w-full text-[11px]">
-                        ${caList.map(ca => `
-                            <tr><td class="font-bold py-3 border-b">${ca}</td>
-                            <td class="border-b"><input type="number" name="OD_Qty_${ca}" placeholder="OD खाते" class="table-input"></td>
-                            <td class="border-b"><input type="number" name="OD_Amt_${ca}" placeholder="OD रक्कम" class="table-input"></td></tr>
-                        `).join('')}
-                    </table>
-                    <label class="text-[9px] font-bold mt-4 block">ओडी कधीपर्यंत कमी करणार? तारीख निवडा</label>
-                    <input type="date" name="OD_Reduction_Date" class="input-field">
-                    <textarea name="Complaints" placeholder="तक्रारी व समस्या..." class="input-field mt-4 h-16"></textarea>
+                    <textarea name="Complaints" placeholder="काही ग्राहकांच्या तक्रारी होत्या का?..." class="input-box h-16"></textarea>
                 `;
             } else if(role === 'BM') {
                 container.innerHTML = `
-                    <div class="section-title">शाखेचे एकूण कलेक्शन</div>
+                    <div class="section-header">आजचे शाखेचे एकुण कलेक्शन</div>
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="number" name="Total_Cust" placeholder="एकूण ग्राहक" class="input-field">
-                        <input type="number" name="Total_Amt" placeholder="रक्कम" class="input-field">
-                        <input type="number" name="Cash_Total" placeholder="कॅश एकूण" class="input-field">
-                        <input type="number" name="Digi_Total" placeholder="डिजीटल एकूण" class="input-field">
+                        <input type="number" name="Total_Cust" placeholder="एकूण ग्राहक" class="input-box">
+                        <input type="number" name="Total_Amt" placeholder="रक्कम" class="input-box">
                     </div>
-
-                    <div class="section-title">ओडी बकेट्स (1-30, 31-90, 91+)</div>
+                    <div class="section-header mt-6">ओडी स्थिती (Buckets)</div>
                     <div class="space-y-3">
-                        <div class="flex gap-2"><span class="w-20 text-[10px] font-bold">1-30 Days</span><input type="number" name="P1_Q" placeholder="Qty" class="input-field"><input type="number" name="P1_A" placeholder="Amt" class="input-field"></div>
-                        <div class="flex gap-2"><span class="w-20 text-[10px] font-bold">31-90 Days</span><input type="number" name="P2_Q" placeholder="Qty" class="input-field"><input type="number" name="P2_A" placeholder="Amt" class="input-field"></div>
-                        <div class="flex gap-2"><span class="w-20 text-[10px] font-bold">91+ Days</span><input type="number" name="P3_Q" placeholder="Qty" class="input-field"><input type="number" name="P3_A" placeholder="Amt" class="input-field"></div>
+                        <div class="flex gap-2"><span class="w-20 text-[10px] font-bold">1-30 Days</span><input type="number" name="PAR1_Qty" placeholder="Qty" class="input-box"><input type="number" name="PAR1_Amt" placeholder="Amt" class="input-box"></div>
+                        <div class="flex gap-2"><span class="w-20 text-[10px] font-bold">31-90 Days</span><input type="number" name="PAR2_Qty" placeholder="Qty" class="input-box"><input type="number" name="PAR2_Amt" placeholder="Amt" class="input-box"></div>
+                        <div class="flex gap-2"><span class="w-20 text-[10px] font-bold">91+ Days</span><input type="number" name="PAR3_Qty" placeholder="Qty" class="input-box"><input type="number" name="PAR3_Amt" placeholder="Amt" class="input-box"></div>
                     </div>
-
-                    <div class="section-title">वाटप (Disbursement)</div>
+                    <div class="section-header mt-6">वाटप (Disbursement)</div>
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="number" name="Disb_Qty" placeholder="ग्राहक संख्या" class="input-field">
-                        <input type="number" name="Disb_Amt" placeholder="रक्कम" class="input-field">
+                        <input type="number" name="Disb_Qty" placeholder="ग्राहक संख्या" class="input-box">
+                        <input type="number" name="Disb_Amt" placeholder="रक्कम" class="input-box">
                     </div>
-                    <select name="Digital_Connect" class="input-field mt-2"><option value="">सर्व डिजीटल कनेक्शन केले काय?</option><option value="Yes">Yes</option><option value="No">No</option></select>
-                    <textarea name="Actions" placeholder="आजच्या प्रमुख ॲक्शन..." class="input-field mt-4 h-16"></textarea>
                 `;
             } else if(role === 'CA') {
                 container.innerHTML = `
-                    <div class="section-title">रेग्युलर कलेक्शन</div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="number" name="Reg_Qty" placeholder="ग्राहक" class="input-field">
-                        <input type="number" name="Reg_Amt" placeholder="रक्कम" class="input-field">
+                    <div class="section-header">कलेक्शन रिपोर्ट</div>
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <label class="text-[9px] col-span-2 font-bold">Reg. Collection</label>
+                        <input type="number" name="Reg_Qty" placeholder="ग्राहक" class="input-box">
+                        <input type="number" name="Reg_Amt" placeholder="रक्कम" class="input-box">
                     </div>
-                    <div class="section-title">ओडी कलेक्शन</div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="number" name="OD_Qty" placeholder="ग्राहक" class="input-field">
-                        <input type="number" name="OD_Amt" placeholder="रक्कम" class="input-field">
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="text-[9px] col-span-2 font-bold">OD Collection</label>
+                        <input type="number" name="OD_Qty" placeholder="ग्राहक" class="input-box">
+                        <input type="number" name="OD_Amt" placeholder="रक्कम" class="input-box">
                     </div>
-                    <div class="section-title">फील्ड वर्क & ॲक्टिव्हिटी</div>
+                    <div class="section-header mt-6">फील्ड ॲक्टिव्हिटी</div>
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="number" name="Meetings" placeholder="गट बैठका" class="input-field">
-                        <input type="number" name="NewGroups" placeholder="नवीन गट" class="input-field">
-                        <input type="number" name="Forms" placeholder="फॉर्म भरले" class="input-field">
-                        <input type="number" name="Digital" placeholder="डिजीटल जोडले" class="input-field">
+                        <input type="number" name="Meetings" placeholder="गट बैठका" class="input-box">
+                        <input type="number" name="NewGroups" placeholder="नवीन गट" class="input-box">
+                        <input type="number" name="Forms" placeholder="फॉर्म भरले" class="input-box">
+                        <input type="number" name="Digital" placeholder="डिजीटल जोडले" class="input-box">
                     </div>
-                    <textarea name="Problems" placeholder="आजच्या कामातील अडचणी..." class="input-field mt-4 h-16"></textarea>
                 `;
             }
         }
 
         function calcFX() {
-            let q = 0, a = 0;
-            document.querySelectorAll('.fx-qty').forEach(i => q += Number(i.value) || 0);
-            document.querySelectorAll('.fx-amt').forEach(i => a += Number(i.value) || 0);
-            document.getElementById('total-qty').innerText = q;
-            document.getElementById('total-amt').innerText = a;
+            let totalQty = 0, totalAmt = 0;
+            document.querySelectorAll('input[name^="Coll_Qty_"]').forEach(i => totalQty += Number(i.value) || 0);
+            document.querySelectorAll('input[name^="Coll_Amt_"]').forEach(i => totalAmt += Number(i.value) || 0);
+            document.getElementById('fx-total-qty').innerText = totalQty;
+            document.getElementById('fx-total-amt').innerText = totalAmt;
         }
 
         document.getElementById('reportingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             btn.disabled = true; btn.innerText = "Syncing with Anik Server...";
+            
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
-            data.Role = user[2];
-            data.StaffName = user[1];
-            data.Unit = user[3];
+            data.Role = currentUser.role;
+            data.StaffName = currentUser.name;
+            data.Unit = currentUser.unit;
 
-            await fetch(scriptURL, { method: 'POST', body: JSON.stringify(data) });
-            alert("Data Submitted Successfully!");
-            location.reload();
+            try {
+                await fetch(scriptURL, { method: 'POST', body: JSON.stringify(data) });
+                alert("Data Sent Successfully!");
+                location.reload();
+            } catch(e) { alert("Error connecting to server!"); btn.disabled = false; }
         });
     </script>
 </body>
